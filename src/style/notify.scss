@@ -1,0 +1,25 @@
+.notify--success {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  padding: 10px 30px;
+  font-family: sans-serif;
+  font-size: rel(1920, 28);
+  background: rgba(0, 255, 51, 0.5);
+  backdrop-filter: blur(7px);
+  border-radius: 15px;
+  border: 1px #eee solid;
+  opacity: 1;
+  transition: all ease 0.3s;
+
+  &--in {
+    opacity: 0;
+    transform: translate(-50%, 120%);
+  }
+
+  &--out {
+    opacity: 0;
+    transform: translate(-50%, 120%);
+  }
+}

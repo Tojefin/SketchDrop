@@ -1,0 +1,2 @@
+//= draw.js
+//= notify.js
