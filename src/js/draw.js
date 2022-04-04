@@ -47,7 +47,7 @@ document.addEventListener('mousemove', e => {
 });
 
 document.addEventListener('keydown', () => {
-  if (event.ctrlKey && event.key === 'z') {
+  if (event.ctrlKey && event.keyCode === 90) {
     let image = new Image();
     image.onload = () => {
       ctx.drawImage(image, 0, 0);
