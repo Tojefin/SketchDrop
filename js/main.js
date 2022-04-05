@@ -7,7 +7,10 @@ let curX = 0;
 let curY = 0;
 let pointX = 0;
 let pointY = 0;
+let lastX = 0;
+let lastY = 0;
 let pressed = false;
+let shift = false;
 let history = [];
 
 const colorPicker = document.querySelector('.toolbar__colorpick');
@@ -42,36 +45,61 @@ function copy() {
 }
 
 document.addEventListener('mousemove', e => {
-  curX = (window.Event) ? e.pageX : e.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-  curY = (window.Event) ? e.pageY : e.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+  if (!shift) {
+    curX = (window.Event) ? e.pageX : e.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+    curY = (window.Event) ? e.pageY : e.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+  }
 });
 
-document.addEventListener('keydown', () => {
-  if (event.ctrlKey && event.key === 'z') {
-    let image = new Image();
-    image.onload = () => {
-      ctx.drawImage(image, 0, 0);
-    };
-    let url = history.pop() ?? null
-    image.src = url
+document.addEventListener('keydown', (e) => {
+  if (e.ctrlKey && e.keyCode == 90) {
+    e.preventDefault();
+    undo();
   }
 })
 
-canvas.addEventListener('mousedown', () => {
-  pressed = true
+function undo() {
+  let image = new Image();
+  image.onload = () => {
+    ctx.drawImage(image, 0, 0);
+  };
+  let url = history.pop() ?? null
+  image.src = url
+}
+
+function saveHistory() {
   history.push(canvas.toDataURL())
   if (history.length >= 100) {
     history.shift()
   }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.keyCode == 16) {
+    shift = true;
+  }
+})
+
+document.addEventListener('keyup', (e) => {
+  if (e.keyCode == 16) {
+    shift = false;
+  }
+})
+
+canvas.addEventListener('mousedown', (e) => {
+  if (e.which == 1) {
+    pointX = curX
+    pointY = curY
+    pressed = true;
+    saveHistory()
+  }
 });
 
-canvas.addEventListener('mouseup', () => {
-  pressed = false
+canvas.addEventListener('mouseup', (e) => {
+  curX = (window.Event) ? e.pageX : e.clientX + (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
+  curY = (window.Event) ? e.pageY : e.clientY + (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
+  setTimeout(()=>{pressed = false}, 50)
 });
-
-function degToRad(degrees) {
-  return degrees * Math.PI / 180;
-};
 
 function draw() {
   if (!pressed) {
@@ -82,7 +110,7 @@ function draw() {
     ctx.beginPath();
     ctx.moveTo(pointX, pointY);
     ctx.lineCap = 'round';
-    ctx.lineWidth = sizePicker.value
+    ctx.lineWidth = sizePicker.value;
     ctx.lineTo(curX , curY);
     ctx.strokeStyle = colorPicker.value;
     ctx.stroke();
